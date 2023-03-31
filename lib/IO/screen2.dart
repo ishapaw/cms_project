@@ -1,30 +1,36 @@
-import 'dart:convert';
-
-import 'package:cms/model.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import '../NavScreens/view.dart';
 import '../Useful/color.dart';
 import '../Useful/widgets.dart';
 
-class Screen extends StatefulWidget {
+class IOScreen extends StatefulWidget {
   String mark_to;
   String officer;
   List<dynamic> compl;
-
-  Screen(
+  IOScreen(
       {Key? key,
       required this.mark_to,
-      required this.officer,
-      required this.compl})
+      required this.compl,
+      required this.officer})
       : super(key: key);
 
   @override
-  State<Screen> createState() => _ScreenState();
+  State<IOScreen> createState() => IOScreenState();
 }
 
-class _ScreenState extends State<Screen> {
+class IOScreenState extends State<IOScreen> {
+  int current = 0, index = 0;
+
+  TextEditingController _searchController = TextEditingController();
+  List<String> filter = ["All", "High Priority", "Pending", "Closed"];
+
+  List<Color> color = [
+    bl,
+    Color(0xffFF0F00),
+    Color(0xffFA9718),
+    Color(0xff00BB13)
+  ];
   List<dynamic> d = [];
 
   String selectedCategory = "Complainant Name";
@@ -36,25 +42,35 @@ class _ScreenState extends State<Screen> {
   ];
   bool isOpen = false;
 
-  @override
-  void initState() {
-    d = widget.compl;
-    ReadData();
+  List<DropdownMenuItem<String>> getDropDownItems() {
+    List<DropdownMenuItem<String>> dropDownItems = [];
+
+    for (int i = 0; i < categoryList.length; i++) {
+      String cat = categoryList[i];
+      var newItem = DropdownMenuItem(
+        child: Text(cat),
+        value: cat,
+      );
+      dropDownItems.add(newItem);
+    }
+    return dropDownItems;
   }
 
-  int current = 0;
+  var _u1;
+
+  @override
+  void initState() {
+    _u1 = widget.compl
+        .where((jsonData) => jsonData["Markto"] == widget.mark_to)
+        .toList();
+    print("ye lo ${_u1}");
+    d = _u1;
+    ReadData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    TextEditingController _searchController = TextEditingController();
-    List<String> filter = ["All", "High Priority", "Pending", "Closed"];
-
-    List<Color> color = [
-      bl,
-      Color(0xffFF0F00),
-      Color(0xffFA9718),
-      Color(0xff00BB13)
-    ];
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -197,7 +213,7 @@ class _ScreenState extends State<Screen> {
                       Row(
                         children: [
                           Text(
-                            "ComplaintName",
+                            "ComplainantName",
                             style: TextStyle(
                                 fontSize: 15,
                                 color: Colors.black,
@@ -248,6 +264,7 @@ class _ScreenState extends State<Screen> {
                                     scrollDirection: Axis.vertical,
                                     itemCount: _users[current].length,
                                     itemBuilder: (context, index) {
+                                      print(_users[current].length);
                                       return Column(
                                         children: [
                                           Padding(
@@ -299,16 +316,14 @@ class _ScreenState extends State<Screen> {
                                                     Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
-                                                            builder:
-                                                                (context) =>
-                                                                    View(
-                                                                      isAll:
-                                                                          false,
-                                                                      current:
-                                                                          current,
-                                                                      d: u1[
-                                                                          index],
-                                                                    )));
+                                                          builder: (context) =>
+                                                              View(
+                                                            isAll: false,
+                                                            current: current,
+                                                            d: _users[current]
+                                                                [index],
+                                                          ),
+                                                        ));
                                                   },
                                                   child: Icon(
                                                     Icons.more_vert,
@@ -344,17 +359,15 @@ class _ScreenState extends State<Screen> {
     );
   }
 
-  var user;
-  var u1;
-  var user2, user3, user4;
+  var u2, u3, u4;
   List<List<dynamic>> _users = [];
 
   ReadData() {
-    user2 = d.where((jsonData) => jsonData["highPriority"] == true).toList();
-    user3 = d.where((jsonData) => jsonData["Status"] == "PENDING").toList();
-    user4 = d.where((jsonData) => jsonData["Status"] == "CLOSED").toList();
+    u2 = d.where((jsonData) => jsonData["highPriority"] == true).toList();
+    u3 = d.where((jsonData) => jsonData["Status"] == "PENDING").toList();
+    u4 = d.where((jsonData) => jsonData["Status"] == "CLOSED").toList();
 
-    _users = [d, user2, user3, user4];
+    _users = [d, u2, u3, u4];
   }
 
   Map<String, String> filters = {
@@ -364,7 +377,7 @@ class _ScreenState extends State<Screen> {
   };
 
   void updateList(String value) {
-    d = widget.compl;
+    d = _u1;
     setState(() {
       d = d
           .where((jsonData) => jsonData[filters[selectedCategory]]
@@ -377,5 +390,3 @@ class _ScreenState extends State<Screen> {
     });
   }
 }
-
-//https://haryanacms.onrender.com/complain/allcomplain

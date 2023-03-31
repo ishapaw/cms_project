@@ -1,221 +1,148 @@
+import 'dart:convert';
+
+import 'package:cms/NavScreens/add.dart';
 import 'package:cms/NavScreens/profile.dart';
+import 'package:cms/NavScreens/today.dart';
 import 'package:cms/Useful/color.dart';
 import 'package:cms/auth/signin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import '../Useful/func.dart';
+import '../Useful/helper.dart';
 import '../Useful/widgets.dart';
+import '../test_api.dart';
+import 'all.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  Map<String, dynamic> userdata = {};
+  List<dynamic> compl = [];
+  List count = [];
+  int len;
+
+  Dashboard(
+      {Key? key,
+      required this.userdata,
+      required this.compl,
+      required this.count,
+      required this.len})
+      : super(key: key);
 
   @override
   State<Dashboard> createState() => _DashboardState();
 }
 
+int cur = 0;
+
 class _DashboardState extends State<Dashboard> {
+  var user;
+  var u1, u2, u3, u4, u5, u6;
+  getNum() {
+    setState(() {
+      u1 = widget.compl
+          .where((jsonData) => jsonData["Markto"] == "satishjain")
+          .toList();
+      u2 = widget.compl
+          .where((jsonData) => jsonData["Markto"] == "rakeshmishra")
+          .toList();
+      u3 = widget.compl
+          .where((jsonData) => jsonData["Markto"] == "sahilsharma")
+          .toList();
+      u4 = widget.compl
+          .where((jsonData) => jsonData["Markto"] == "rohitpawar")
+          .toList();
+      u5 = widget.compl
+          .where((jsonData) => jsonData["Markto"] == "satishyadav")
+          .toList();
+      u6 = widget.compl
+          .where((jsonData) => jsonData["Markto"] == "gauravpandey")
+          .toList();
+    });
+  }
+
+  List ct = [];
+
+  @override
+  void initState() {
+    print(ct);
+    getNum();
+    ReadData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("aaya ${widget.compl}");
+    ct = widget.count;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: Builder(
-          builder: (BuildContext context) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-              child: IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              ),
-            );
-          },
-        ),
-        leadingWidth: 38,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Colors.white,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Welcome,",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20),
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Text(
-              "Manish Sharma, SHO",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15),
-            ),
-          ],
-        ),
-      ),
-      drawer: Drawer(
-        backgroundColor: Colors.white,
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(20),
-              color: darkBlue,
-              child: Center(
-                child: Column(
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(
-                              "assets/images/harayana_police_logo.png"),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      "Complaint Management System",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 17),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            listTile("Profile", Icons.person),
-            listTile("Dashboard", Icons.dashboard),
-            listTile("Add New Complaint", Icons.add_circle),
-            SizedBox(
-              height: 5,
-            ),
-            Divider(
-              color: Colors.black,
-              thickness: 1,
-              height: 15,
-              indent: 20,
-              endIndent: 20,
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            listTile("All Complaints (60)", Icons.calendar_today_rounded),
-            listTile("Today's Complaints (20)", Icons.calendar_today_rounded),
-            listTile("High Priority (7)", Icons.calendar_today_rounded),
-            listTile("Pending Complaints (8)", Icons.calendar_today_rounded),
-            listTile("Closed Complaints (10)", Icons.calendar_today_rounded),
-            SizedBox(
-              height: 5,
-            ),
-            Divider(
-              color: Colors.black,
-              thickness: 1,
-              height: 15,
-              indent: 20,
-              endIndent: 20,
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            ListTile(
-              visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-              leading: IconButton(
-                icon: Icon(Icons.logout_rounded),
-                color: darkBlue,
-                onPressed: () {},
-              ),
-              title: Text(
-                "LogOut",
-                style: TextStyle(fontSize: 16, color: Colors.black),
-              ),
-            ),
-          ],
-        ),
-      ),
       body: Column(
         children: [
-          // Padding(
-          //   padding: const EdgeInsets.fromLTRB(15, 40, 20, 0),
-          //   child: Column(
-          //     children: [
-          //       Row(
-          //         children: [
-          //           GestureDetector(
-          //             onTap: () {
-
-          //             },
-          //             child: Container(
-          //                 child: Image(
-          //                     image: AssetImage("assets/images/drawer.png"))),
-          //           ),
-          //           SizedBox(
-          //             width: 20,
-          //           ),
-
-          //         ],
-          //       ),
-          //       SizedBox(
-          //         height: 5,
-          //       ),
-          //       Row(
-          //         children: [
-          //           SizedBox(
-          //             width: 47,
-          //           ),
-          //           Text(
-          //             "Manish Sharma, SHO",
-          //             style: TextStyle(
-          //                 color: Colors.black,
-          //                 fontSize: 15,
-          //                 fontWeight: FontWeight.w500),
-          //           ),
-          //         ],
-          //       ),
-          //     ],
-          //   ),
-          // ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(
+                  'Welcome,',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 25),
+                ),
+                Text(
+                  widget.userdata != null
+                      ? widget.userdata["fname"] +
+                          " " +
+                          widget.userdata["lname"]
+                      : "oho",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15),
+                ),
                 SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 Row(
                   children: [
                     Spacer(),
-                    card(context, 15, "Total Complaints"),
+                    card(
+                        context,
+                        _users != null && _users.length > 0
+                            ? _users[0].length
+                            : -1,
+                        "Total Complaints"),
                     SizedBox(
                       width: 15,
                     ),
-                    card(context, 10, "CAW Complaints"),
+                    card(
+                        context,
+                        _users != null && _users.length > 1
+                            ? _users[1].length
+                            : -1,
+                        "CAW Complaints"),
                     Spacer()
                   ],
                 ),
                 Row(
                   children: [
                     Spacer(),
-                    card(context, 8, "Pending Complaints"),
+                    card(
+                        context,
+                        _users != null && _users.length > 2
+                            ? _users[2].length
+                            : -1,
+                        "Pending Complaints"),
                     SizedBox(
                       width: 15,
                     ),
-                    card(context, 7, "Closed Complaints"),
+                    card(
+                        context,
+                        _users != null && _users.length > 3
+                            ? _users[3].length
+                            : -1,
+                        "Closed Complaints"),
                     Spacer()
                   ],
                 ),
@@ -253,21 +180,44 @@ class _DashboardState extends State<Dashboard> {
                         SizedBox(
                           width: 10,
                         ),
-                        ver_card(context, 5, "Manish Sharma"),
+                        ver_card(context, u1 != null ? u1.length : 0,
+                            "Satish Jain", "satishjain",widget.compl),
                         SizedBox(
                           width: 20,
                         ),
-                        ver_card(context, 10, "Satish Jain"),
+                        ver_card(context, u2 != null ? u2.length : 0,
+                            "Rakesh Mishra", "rakeshmishra",widget.compl),
                         SizedBox(
                           width: 20,
                         ),
-                        ver_card(context, 15, "Amit Shukla")
+                        ver_card(context, u3 != null ? u3.length : 0,
+                            "Sahil Sharma", "sahilsharma",widget.compl),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        ver_card(context, u4 != null ? u4.length : 0,
+                            "Rohit Pawar", "rohitpawar",widget.compl),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        ver_card(
+                          context,
+                          u5 != null ? u5.length : 0,
+                          "Satish Yadav",
+                          "satishyadav"
+                            ,widget.compl
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        ver_card(context, u6 != null ? u6.length : 0,
+                            "Gaurav Pandey", "gauravpandey",widget.compl)
                       ],
                     ),
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 15,
                 ),
                 Row(
                   children: [
@@ -288,6 +238,110 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ],
                 ),
+                SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "ComplainantName",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            width: 30,
+                          ),
+                          Text(
+                            "Category",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            width: 50,
+                          ),
+                          Text(
+                            "Status",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        height: widget.len == 2
+                            ? MediaQuery.of(context).size.height / 15
+                            : MediaQuery.of(context).size.height / 8,
+                        child: FutureBuilder(
+                            future: ReadData(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Text('Loading');
+                              } else {
+                                return ListView.builder(
+                                    itemCount: widget.len,
+                                    itemBuilder: (context, index) {
+                                      print(widget.len);
+                                      if (widget.compl != [] &&
+                                          widget.compl[index]
+                                                  ["ComplainantName"] !=
+                                              null) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8.0),
+                                          child: Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 150,
+                                                child: Text(
+                                                  widget.compl[index]
+                                                          ["ComplainantName"]
+                                                      .toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.black),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(
+                                                widget.compl[index]
+                                                        ["ComplaintCategory"]
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                              ),
+                                              SizedBox(
+                                                width: 65,
+                                              ),
+                                              Text(
+                                                widget.compl[index]["Status"]
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }
+                                      return Container();
+                                    });
+                              }
+                            }),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -295,137 +349,21 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
-}
 
-//Drawer(
-//         backgroundColor: Colors.white,
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Container(
-//               width: double.infinity,
-//               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-//               color: darkBlue,
-//               child: Center(
-//                 child: Column(
-//                   children: [
-//                     Container(
-//                       width: 100,
-//                       height: 100,
-//                       decoration: BoxDecoration(
-//                         image: DecorationImage(
-//                           image: AssetImage(
-//                               "assets/images/harayana_police_logo.png"),
-//                         ),
-//                       ),
-//                     ),
-//                     SizedBox(height: 10),
-//                     Text(
-//                       "Complaint Management System",
-//                       style: TextStyle(
-//                           color: Colors.white,
-//                           fontWeight: FontWeight.w600,
-//                           fontSize: 17),
-//                     )
-//                   ],
-//                 ),
-//               ),
-//             ),
-//             Padding(
-//               padding: const EdgeInsets.all(20.0),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   GestureDetector(
-//                       onTap: () {},
-//                       child: Text("Profile",
-//                           style: TextStyle(
-//                               fontSize: 16,
-//                               color: Colors.black,
-//                               fontWeight: FontWeight.w500))),
-//                   SizedBox(height: 20),
-//                   GestureDetector(
-//                       onTap: () {},
-//                       child: Text('Dashboard',
-//                           style: TextStyle(
-//                               fontSize: 16,
-//                               color: Colors.black,
-//                               fontWeight: FontWeight.w500))),
-//                   SizedBox(height: 20),
-//                   GestureDetector(
-//                       onTap: () {},
-//                       child: Text('Add New Complaint',
-//                           style: TextStyle(
-//                               fontSize: 16,
-//                               color: Colors.black,
-//                               fontWeight: FontWeight.w500))),
-//                   SizedBox(height: 10),
-//                   Divider(
-//                     color: Colors.black,
-//                     thickness: 1,
-//                     height: 15,
-//                     // indent: 5,
-//                     // endIndent: 5,
-//                   ),
-//                   SizedBox(height: 10),
-//                   GestureDetector(
-//                       onTap: () {},
-//                       child: Text('All Complaints  (20)',
-//                           style: TextStyle(
-//                               fontSize: 16,
-//                               color: Colors.black,
-//                               fontWeight: FontWeight.w500))),
-//                   SizedBox(height: 20),
-//                   GestureDetector(
-//                       onTap: () {},
-//                       child: Text("Today's Complaints  (20)",
-//                           style: TextStyle(
-//                               fontSize: 16,
-//                               color: Colors.black,
-//                               fontWeight: FontWeight.w500))),
-//                   SizedBox(height: 20),
-//                   GestureDetector(
-//                       onTap: () {},
-//                       child: Text('High Priority  (20)',
-//                           style: TextStyle(
-//                               fontSize: 16,
-//                               color: Colors.black,
-//                               fontWeight: FontWeight.w500))),
-//                   SizedBox(height: 20),
-//                   GestureDetector(
-//                       onTap: () {},
-//                       child: Text('Pending Complaints  (20)',
-//                           style: TextStyle(
-//                               fontSize: 16,
-//                               color: Colors.black,
-//                               fontWeight: FontWeight.w500))),
-//                   SizedBox(height: 20),
-//                   GestureDetector(
-//                       onTap: () {},
-//                       child: Text('Closed Complaints  (20)',
-//                           style: TextStyle(
-//                               fontSize: 16,
-//                               color: Colors.black,
-//                               fontWeight: FontWeight.w500))),
-//                   SizedBox(height: 10),
-//                   Divider(
-//                     color: Colors.black,
-//                     thickness: 1,
-//                     height: 15,
-//                     // indent: 5,
-//                     // endIndent: 5,
-//                   ),
-//                   SizedBox(height: 10),
-//                   GestureDetector(
-//                       onTap: () {},
-//                       child: Text("Log Out",
-//                           style: TextStyle(
-//                               fontSize: 16,
-//                               color: Colors.black,
-//                               fontWeight: FontWeight.w500))),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
+  var _u2, _u3, _u4;
+  List<List<dynamic>> _users = [];
+
+  ReadData() {
+    _u2 = widget.compl
+        .where((jsonData) => jsonData["ComplaintCategory"] == "CAW")
+        .toList();
+    _u3 = widget.compl
+        .where((jsonData) => jsonData["Status"] == "PENDING")
+        .toList();
+    _u4 = widget.compl
+        .where((jsonData) => jsonData["Status"] == "CLOSED")
+        .toList();
+
+    _users = [widget.compl, _u2, _u3, _u4];
+  }
+}

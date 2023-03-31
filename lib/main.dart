@@ -1,6 +1,12 @@
+import 'dart:async';
+
+import 'package:cms/NavScreens/dashboard.dart';
 import 'package:cms/bottom_nav_bar.dart';
 import 'package:cms/auth/signin.dart';
+import 'package:cms/test_api.dart';
 import 'package:flutter/material.dart';
+import 'Useful/func.dart';
+import 'Useful/helper.dart';
 
 void main() async {
   runApp(MaterialApp(
@@ -18,11 +24,35 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
+  bool userIsLoggedIn = false;
+
+  getLoggedInState() async {
+    await HelperFunctions.getuserLoggedInSharePreference().then((value) {
+      setState(() {
+        userIsLoggedIn = value!;
+      });
+    });
+  }
+
+  String uid = "";
+
   @override
   void initState() {
+    getLoggedInState();
+
+    HelperFunctions.getuserNameSharePreference().then((value) {
+      setState(() {
+        uid = value.toString();
+      });
+    });
+
     Future.delayed(Duration(seconds: 3), () {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => SignIn()));
+      userIsLoggedIn != null
+          ? userIsLoggedIn
+              ? checker(context, uid)
+              : Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => SignIn()))
+          : Container();
     });
   }
 

@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:cms/auth/signin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
 import '../Useful/color.dart';
 
 class ResetPassword extends StatefulWidget {
@@ -16,6 +18,16 @@ double screenh = 0;
 double screenw = 0;
 String email = "";
 bool isHide = false;
+
+// Future sendEmail() async{
+//   final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
+//   const serviceId="service_077bman";
+//   const templateId="template_73r4lj9";
+//   const userId="";
+//   final response = await http.post(url,headers: {'Content-Type': 'application/json'},body: json.encode({
+//     "servie_id":
+//   }));
+// }
 
 class _ResetPasswordState extends State<ResetPassword> {
   @override
@@ -161,4 +173,6 @@ class _ResetPasswordState extends State<ResetPassword> {
       ]),
     );
   }
+
+  // Future sendEmail({required String n}) {}
 }
