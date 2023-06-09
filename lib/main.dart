@@ -1,18 +1,19 @@
 import 'dart:async';
-
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:cms/NavScreens/dashboard.dart';
-import 'package:cms/bottom_nav_bar.dart';
+import 'package:cms/NavScreens/bottom_nav_bar.dart';
 import 'package:cms/auth/signin.dart';
-import 'package:cms/test_api.dart';
 import 'package:flutter/material.dart';
 import 'Useful/func.dart';
 import 'Useful/helper.dart';
 
 void main() async {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(brightness: Brightness.dark, primarySwatch: Colors.cyan),
-    home: Splash(),
+  runApp(Phoenix(
+    child: MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(brightness: Brightness.dark, primarySwatch: Colors.cyan),
+      home: Splash(),
+    ),
   ));
 }
 
@@ -40,13 +41,13 @@ class _SplashState extends State<Splash> {
   void initState() {
     getLoggedInState();
 
-    HelperFunctions.getuserNameSharePreference().then((value) {
+    HelperFunctions.getuserSharePreference().then((value) {
       setState(() {
         uid = value.toString();
       });
     });
 
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: 2), () {
       userIsLoggedIn != null
           ? userIsLoggedIn
               ? checker(context, uid)
@@ -72,7 +73,7 @@ class _SplashState extends State<Splash> {
                 Spacer(),
                 Image(
                   image: AssetImage('assets/images/harayana_police_logo.png'),
-                  height: 200,
+                  height: 100,
                 ),
                 Spacer(),
               ],

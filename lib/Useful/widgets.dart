@@ -1,57 +1,71 @@
-import 'package:cms/IO/screen.dart';
 import 'package:flutter/material.dart';
 
 import '../IO/screen2.dart';
+import '../IO/screen4.dart';
 import 'color.dart';
 
-Widget card(BuildContext context, int count, String text) {
-  return Container(
-    height: 100,
-    width: MediaQuery.of(context).size.width / 2.45,
-    decoration: BoxDecoration(
-        image: DecorationImage(
-            fit: BoxFit.fitWidth,
-            image: AssetImage("assets/images/rect2.png"))),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "${count}",
-            style: TextStyle(
-                fontSize: 33, color: darkBlue, fontWeight: FontWeight.w700),
-          ),
-          // SizedBox(
-          //   height: 1,
-          // ),
-          Text(
-            text,
-            style: TextStyle(
-                fontSize: 13, color: darkBlue, fontWeight: FontWeight.w500),
-          )
-        ],
+Widget card(BuildContext context, int count, String text, Function()? func) {
+  return GestureDetector(
+    onTap: func,
+    child: Container(
+      height: 100,
+      width: MediaQuery.of(context).size.width / 2.45,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+              fit: BoxFit.fitWidth,
+              image: AssetImage("assets/images/rect2.png"))),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "${count}",
+              style: TextStyle(
+                  fontSize: 31, color: darkBlue, fontWeight: FontWeight.w700),
+            ),
+            // SizedBox(
+            //   height: 1,
+            // ),
+            Text(
+              text,
+              style: TextStyle(
+                  fontSize: 11, color: darkBlue, fontWeight: FontWeight.w500),
+            )
+          ],
+        ),
       ),
     ),
   );
 }
 
-Widget ver_card(BuildContext context, int count, String name, String mark_to,
-    List<dynamic> compl) {
+Widget ver_card(
+    BuildContext context,
+    int count,
+    int p_count,
+    String name,
+    String mark_to,
+    Map<String, dynamic> userdata,
+    List<dynamic> compl,
+    List<dynamic> pol,
+    List<dynamic> category) {
   return GestureDetector(
     onTap: () {
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => IOScreen(
+                    category: category,
+                    pol: pol,
+                    userdata: userdata,
                     compl: compl,
                     officer: name,
                     mark_to: mark_to,
                   )));
     },
     child: Container(
-      height: 180,
+      height: 200,
       width: 130,
       decoration: BoxDecoration(
         boxShadow: kElevationToShadow[3],
@@ -65,8 +79,8 @@ Widget ver_card(BuildContext context, int count, String name, String mark_to,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Image(
-              image: AssetImage("assets/images/harayana_police_logo.png"),
-              height: 70,
+              image: AssetImage("assets/images/logo_cms.png"),
+              height: 80,
             ),
             SizedBox(
               height: 18,
@@ -74,15 +88,23 @@ Widget ver_card(BuildContext context, int count, String name, String mark_to,
             Text(
               name,
               style: TextStyle(
-                  fontSize: 15, color: darkBlue, fontWeight: FontWeight.w700),
+                  fontSize: name.length <= 20 ? 14 : 12,
+                  color: darkBlue,
+                  fontWeight: FontWeight.w700),
+            ),
+            Spacer(),
+            Text(
+              "Total Complaints- ${count}",
+              style: TextStyle(
+                  fontSize: 10, color: darkBlue, fontWeight: FontWeight.w500),
             ),
             SizedBox(
               height: 3,
             ),
             Text(
-              "complaints- ${count}",
+              "Pending Complaints- ${p_count}",
               style: TextStyle(
-                  fontSize: 13, color: darkBlue, fontWeight: FontWeight.w400),
+                  fontSize: 10, color: darkBlue, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -99,9 +121,12 @@ Widget listTile(String text, IconData? icon, void Function()? func) {
       color: darkBlue,
       onPressed: func,
     ),
-    title: Text(
-      text,
-      style: TextStyle(fontSize: 15, color: Colors.black),
+    title: GestureDetector(
+      onTap: func,
+      child: Text(
+        text,
+        style: TextStyle(fontSize: 10, color: Colors.black),
+      ),
     ),
   );
 }
@@ -139,7 +164,7 @@ Widget profile(BuildContext context, String title, String ans) {
           Text(
             title,
             style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+                fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black),
           ),
         ],
       ),

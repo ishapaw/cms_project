@@ -1,5 +1,5 @@
 import 'package:cms/NavScreens/profile.dart';
-import 'package:cms/NavScreens/view.dart';
+import 'package:cms/comments/view.dart';
 import 'package:cms/Useful/color.dart';
 import 'package:cms/Useful/helper.dart';
 import 'package:cms/Useful/widgets.dart';
@@ -11,9 +11,15 @@ import 'all.dart';
 import 'dashboard.dart';
 
 class TodayScreen extends StatefulWidget {
-  List<dynamic> compl;
+  List<dynamic> compl, category;
+  Map<String, dynamic> userdata;
 
-  TodayScreen({Key? key, required this.compl}) : super(key: key);
+  TodayScreen(
+      {Key? key,
+      required this.compl,
+      required this.userdata,
+      required this.category})
+      : super(key: key);
 
   @override
   State<TodayScreen> createState() => _TodayScreenState();
@@ -25,7 +31,6 @@ class _TodayScreenState extends State<TodayScreen> {
   int current = 0;
   List<dynamic> d = [];
 
-  List<String> filter = ["All", "High Priority", "Pending", "Closed"];
   List<Color> color = [
     bl,
     Color(0xffFF0F00),
@@ -33,26 +38,70 @@ class _TodayScreenState extends State<TodayScreen> {
     Color(0xff00BB13)
   ];
 
-  String selectedCategory = "Complainant Name";
-
   List<String> categoryList = [
     'Complainant Name',
     'Father\'s Name',
-    'Phone Number'
+    'Phone Number',
+    'Address'
   ];
+
+  List<String> categoryList1 = [
+    'Complainant Name',
+    'Police Station',
+    'Father\'s Name',
+    'Phone Number',
+    'Address'
+  ];
+
+  Map<String, String> filters1 = {
+    "Complainant Name": "ComplainantName",
+    "Police Station": "policestation",
+    "Phone Number": "ComplainantPhoneNumber",
+    "Father's Name": "FatherName",
+    "Address": "Address"
+  };
+
+  Map<String, String> filters = {
+    "Complainant Name": "ComplainantName",
+    "Phone Number": "ComplainantPhoneNumber",
+    "Father's Name": "FatherName",
+    "Address": "Address"
+  };
+
+  String selectedCategory = "Complainant Name";
+
   bool isOpen = false;
   var _u1;
 
-  var formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  var formattedDate =
+      DateFormat('yyyy-MM-dd').format(DateTime.now()).toString();
+
+  List<String> dropDownItems1 = ["All"];
+
+  getCategory() {
+    for (int i = 0; i < widget.category.length; i++) {
+      String cat = widget.category[i]["categoryName"] +
+          "-  " +
+          "${_u1.where((jsonData) => (jsonData["ComplaintCategory"] == widget.category[i]["categoryName"])).toList().length}";
+      print(cat);
+      dropDownItems1.add(cat);
+    }
+  }
 
   @override
   void initState() {
     _u1 = widget.compl
         .where((jsonData) =>
-            jsonData["createdAt"].toString().substring(0, 10) == formattedDate)
+            DateTime.parse(jsonData["createdAt"])
+                .toLocal()
+                .toString()
+                .substring(0, 10) ==
+            formattedDate)
         .toList();
     d = _u1;
+
     ReadData();
+    getCategory();
   }
 
   @override
@@ -66,15 +115,60 @@ class _TodayScreenState extends State<TodayScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10.0, 0, 0, 10),
-              child: Text(
-                'Today\'s Complaints',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 25),
-              ),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10.0, 0, 0, 10),
+                  child: Text(
+                    'Today\'s Complaints',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 23),
+                  ),
+                ),
+                Expanded(child: Container()),
+                if (widget.userdata["designation"] == "ADGP" ||
+                    widget.userdata["designation"] == "SP")
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        color: lightBlue,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: PopupMenuButton<String>(
+                      itemBuilder: (context) {
+                        return dropDownItems1.map((str) {
+                          return PopupMenuItem(
+                            value: str,
+                            child: Text(str),
+                          );
+                        }).toList();
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            "Category",
+                            style: TextStyle(
+                                color: darkBlue,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13),
+                          )
+                        ],
+                      ),
+                      onSelected: (v) {
+                        v == "All"
+                            ? updateList2(v)
+                            : updateList2(
+                                v.substring(0, v.indexOf('-')),
+                              );
+                        setState(() {
+                          print('!!!===== $v');
+                        });
+                      },
+                    ),
+                  ),
+              ],
             ),
             SizedBox(
               height: 10,
@@ -193,11 +287,12 @@ class _TodayScreenState extends State<TodayScreen> {
               child: Column(
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "ComplaintName",
+                        "Compl. Name",
                         style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 13,
                             color: Colors.black,
                             fontWeight: FontWeight.w600),
                       ),
@@ -207,7 +302,7 @@ class _TodayScreenState extends State<TodayScreen> {
                       Text(
                         "Category",
                         style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 13,
                             color: Colors.black,
                             fontWeight: FontWeight.w600),
                       ),
@@ -217,7 +312,7 @@ class _TodayScreenState extends State<TodayScreen> {
                       Text(
                         "Status",
                         style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 13,
                             color: Colors.black,
                             fontWeight: FontWeight.w600),
                       ),
@@ -250,43 +345,51 @@ class _TodayScreenState extends State<TodayScreen> {
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            vertical: 8.0),
+                                            vertical: 8.0, horizontal: 5),
                                         child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Container(
-                                              width: 150,
+                                              width: 110,
                                               child: Text(
                                                 _users[current][index]
                                                         ["ComplainantName"]
-                                                    .toString()
-                                                    .toUpperCase(),
+                                                    .toString(),
                                                 style: TextStyle(
-                                                    color: Colors.black),
+                                                  fontSize: 12,
+                                                  color: _users[current][index][
+                                                              "highPriority"] ==
+                                                          true
+                                                      ? Colors.red
+                                                      : Colors.black,
+                                                ),
                                               ),
                                             ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
                                             Container(
-                                              width: 80,
+                                              width: 90,
                                               child: Text(
                                                 _users[current][index]
                                                         ["ComplaintCategory"]
                                                     .toString(),
                                                 style: TextStyle(
-                                                    color: Colors.black),
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
                                               ),
                                             ),
                                             SizedBox(
-                                              width: 5,
+                                              width: 10,
                                             ),
                                             Container(
-                                              width: 75,
+                                              width: 60,
                                               child: Text(
                                                 _users[current][index]["Status"]
                                                     .toString(),
                                                 style: TextStyle(
-                                                    color: Colors.black),
+                                                    fontSize: 12,
+                                                    color: colr[_users[current]
+                                                        [index]["Status"]]),
                                               ),
                                             ),
                                             GestureDetector(
@@ -298,9 +401,12 @@ class _TodayScreenState extends State<TodayScreen> {
                                                     MaterialPageRoute(
                                                         builder: (context) =>
                                                             View(
+                                                              userdata: widget
+                                                                  .userdata,
                                                               isAll: false,
                                                               current: current,
-                                                              d: u1[index],
+                                                              d: _users[current]
+                                                                  [index],
                                                             )));
                                               },
                                               child: Icon(
@@ -347,21 +453,15 @@ class _TodayScreenState extends State<TodayScreen> {
 
     user2 = d.where((jsonData) => jsonData["highPriority"] == true).toList();
     user3 = d.where((jsonData) => jsonData["Status"] == "PENDING").toList();
-    user4 = d.where((jsonData) => jsonData["Status"] == "CLOSED").toList();
+    user4 = d.where((jsonData) => jsonData["Status"] == "DISPOSE OFF").toList();
 
     _users = [d, user2, user3, user4];
     ct = [d.length, user2.length, user3.length, user4.length];
   }
 
-  Map<String, String> filters = {
-    "Complainant Name": "ComplainantName",
-    "Phone Number": "ComplainantPhoneNumber",
-    "Father's Name": "FatherName"
-  };
-
   void updateList(String value) {
     d = _u1;
-    print("kese ho${d}");
+
     setState(() {
       d = d
           .where((jsonData) => jsonData[filters[selectedCategory]]
@@ -369,8 +469,19 @@ class _TodayScreenState extends State<TodayScreen> {
               .toLowerCase()
               .contains(value.toLowerCase()))
           .toList();
+    });
+  }
 
-      print("thik${d}");
+  void updateList2(String value) {
+    d = _u1;
+    setState(() {
+      if (value == "All") {
+        d = _u1;
+      } else {
+        d = d
+            .where((jsonData) => jsonData["ComplaintCategory"] == value)
+            .toList();
+      }
     });
   }
 }

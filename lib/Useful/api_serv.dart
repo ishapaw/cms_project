@@ -5,10 +5,12 @@ class ApiServices {
   Future<LoginApiResponse> apiCallLogin(var email, var pass) async {
     print(email);
     print(pass);
-    var url = Uri.parse('https://hrycms.onrender.com/user/login');
+    var url = Uri.parse('https://cmsserver-tjnm.onrender.com/user/login');
     http.Response response = await http.post(url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(<String, String>{"email": email, "password": pass}));
+
+    print(response.statusCode);
 
     if (response.statusCode == 200) {
       print("login successfully");

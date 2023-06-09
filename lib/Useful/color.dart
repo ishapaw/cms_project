@@ -11,6 +11,16 @@ Color greyMed = Color(0xFF8F8688);
 Color greyLight = Color(0xFFEDEAEA);
 Color transparent_overlay = Color(0xFFFFFF);
 
+Map colr = {
+  "PENDING": Colors.orange,
+  "IN-PROCESS": Colors.green,
+  "DISPOSE OFF": darkBlue,
+  "OVERDUE": Colors.purple
+};
+
+List<String> filter = ["All", "High Priority", "Pending", "Dispose Off"];
+List<String> filter1 = ["All", "Today"];
+
 Widget loaderss(bool a, BuildContext context) {
   return Visibility(
       visible: a,
@@ -68,8 +78,3 @@ class loader extends StatelessWidget {
   }
 }
 
-// Widget card(int num, String category) {
-//   return Container(
-//     decoration: BoxDecoration(borderRadius: BorderRadius.vertical(0)),
-//   );
-// }

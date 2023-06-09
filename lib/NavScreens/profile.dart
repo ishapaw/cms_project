@@ -42,14 +42,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Center(
                     child: Image(
                   image: AssetImage("assets/images/harayana_police_logo.png"),
-                  height: 100,
+                  height: 50,
                 )),
                 SizedBox(
                   height: 10,
                 ),
                 Center(
                   child: Text(
-                    d["policestation"] != null ? d["policestation"] : "hello",
+                    d["designation"] == "ADGP"
+                        ? d["policerange"] != ""
+                            ? "District - ${d["policerange"]}"
+                            : "District - HISAR"
+                        : d["designation"] == "SP"
+                            ? d["districtofc"] != ""
+                                ? d["districtofc"]
+                                : "hello"
+                            : "${d["policestation"]}",
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -93,7 +101,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                profile(context, "Address of Police Station -", "xyz"),
+                d["designation"] == "SHO"
+                    ? profile(context, "Address of Police Station -", "xyz")
+                    : Container(),
               ],
             ),
           ),

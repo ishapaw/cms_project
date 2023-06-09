@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 
+import 'package:cms/Useful/func.dart';
 import 'package:cms/auth/signin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,16 +21,28 @@ double screenh = 0;
 double screenw = 0;
 String email = "";
 bool isHide = false;
+final _messangerKey = GlobalKey<ScaffoldMessengerState>();
 
-// Future sendEmail() async{
-//   final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
-//   const serviceId="service_077bman";
-//   const templateId="template_73r4lj9";
-//   const userId="";
-//   final response = await http.post(url,headers: {'Content-Type': 'application/json'},body: json.encode({
-//     "servie_id":
-//   }));
-// }
+Future sendEmail() async {
+  String email = "harcms123@gmail.com";
+  String pass = "zgfuzojqztbirbdf";
+
+  final smtpServer = gmail(email, pass);
+
+  final msg = Message()
+    ..from = Address(email)
+    ..recipients.add('matrikaventures2020@gmail.com')
+    ..subject = 'Haryana CMS- Change Password'
+    ..text = "Please change the password of mail id ${_emailController.text}";
+
+  try {
+    final sendReport = await send(msg, smtpServer);
+    Snacker("Mail sent", _messangerKey);
+    print("done");
+  } on MailerException catch (e) {
+    print("Message not sent" + e.toString());
+  }
+}
 
 class _ResetPasswordState extends State<ResetPassword> {
   @override
@@ -63,11 +78,11 @@ class _ResetPasswordState extends State<ResetPassword> {
                 Center(
                   child: Image(
                     image: AssetImage('assets/images/harayana_police_logo.png'),
-                    height: 120,
+                    height: 60,
                   ),
                 ),
                 SizedBox(
-                  height: 95,
+                  height: MediaQuery.of(context).size.height / 5,
                 ),
                 Text(
                   'Reset Password',
@@ -137,6 +152,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                         height: 50,
                         child: ElevatedButton(
                           onPressed: () {
+                            sendEmail();
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
